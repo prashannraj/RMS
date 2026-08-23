@@ -43,6 +43,11 @@ class User extends Authenticatable
     }
 
     // ─── Relationships ───
+    public function candidate()
+    {
+        return $this->hasOne(Candidate::class);
+    }
+
     public function resources()
     {
         return $this->hasMany(Resource::class);
