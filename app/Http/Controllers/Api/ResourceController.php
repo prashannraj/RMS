@@ -1,4 +1,3 @@
-// File: rms-backend/app/Http/Controllers/Api/ResourceController.php
 <?php
 
 namespace App\Http\Controllers\Api;

@@ -1,4 +1,3 @@
-// File: rms-backend/app/Http/Controllers/Api/AuthController.php
 <?php
 
 namespace App\Http\Controllers\Api;

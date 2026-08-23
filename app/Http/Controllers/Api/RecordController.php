@@ -1,4 +1,3 @@
-// File: rms-backend/app/Http/Controllers/Api/RecordController.php
 <?php
 
 namespace App\Http\Controllers\Api;
