@@ -31,12 +31,14 @@ class AuthController extends Controller
             ], 403);
         }
 
+        $user->updateLastLogin($request->ip());
+
         $token = $user->createToken('rms-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => new UserResource($user),
+                'user' => new UserResource($user->load('roles')),
                 'token' => $token,
             ],
             'message' => 'Login successful.',
@@ -50,15 +52,18 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
-            'role' => 'staff',
+            'is_active' => true,
         ]);
+
+        // Assign default role via spatie/laravel-permission
+        $user->assignRole('candidate');
 
         $token = $user->createToken('rms-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'data' => [
-                'user' => new UserResource($user),
+                'user' => new UserResource($user->load('roles')),
                 'token' => $token,
             ],
             'message' => 'Registration successful.',
@@ -69,7 +74,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => new UserResource(auth()->user()),
+            'data' => new UserResource(auth()->user()->load('roles')),
         ]);
     }
 

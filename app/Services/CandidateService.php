@@ -6,6 +6,7 @@ use App\Models\Candidate;
 use App\Models\CandidateAddress;
 use App\Models\CandidateEducationDetail;
 use App\Models\CandidateExtraDetail;
+use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -38,6 +39,9 @@ class CandidateService
 
     public function getProfile(int $userId): ?Candidate
     {
+        // Auto-create an empty profile so new users don't get 404s.
+        $this->ensureProfileExists($userId);
+
         return Candidate::with([
             'user',
             'issueDistrict',
@@ -49,6 +53,42 @@ class CandidateService
             'extraDetails.motherTongue',
             'educationDetails',
         ])->where('user_id', $userId)->first();
+    }
+
+    /**
+     * Create a placeholder candidate record for the user if none exists.
+     * The full name is derived from the linked user account.
+     */
+    public function ensureProfileExists(int $userId): Candidate
+    {
+        return Candidate::firstOrCreate(
+            ['user_id' => $userId],
+            [
+                'first_name' => $this->guessFirstName($userId),
+                'last_name' => $this->guessLastName($userId),
+                'date_of_birth_ad' => '2000-01-01',
+                'date_of_birth_bs' => '2056-09-17',
+                'citizenship_no' => '',
+                'gender' => '',
+                'is_active' => true,
+            ]
+        );
+    }
+
+    private function guessFirstName(int $userId): string
+    {
+        $name = optional(User::find($userId))->name ?? 'New';
+        $parts = preg_split('/\s+/', trim($name));
+
+        return $parts[0] ?: 'New';
+    }
+
+    private function guessLastName(int $userId): string
+    {
+        $name = optional(User::find($userId))->name ?? 'Candidate';
+        $parts = preg_split('/\s+/', trim($name));
+
+        return count($parts) > 1 ? end($parts) : 'Candidate';
     }
 
     public function findOrFail(int $id): Candidate

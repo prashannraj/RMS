@@ -66,6 +66,9 @@ Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
     // Vacancy eligibility (authenticated)
     Route::get('vacancies/{id}/eligibility', [AdvertisementController::class, 'eligibility']);
 
+    // Dashboard stats for all authenticated users
+    Route::get('dashboard', [App\Http\Controllers\Api\V1\AdminController::class, 'dashboard']);
+
     // Applications
     Route::prefix('applications')->group(function () {
         Route::get('/', [ApplicationController::class, 'index']);

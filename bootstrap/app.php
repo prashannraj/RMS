@@ -16,6 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Return JSON for unauthenticated API requests instead of redirecting
         $middleware->redirectGuestsTo(fn (Request $request) => null);
+
+        // Register route middleware aliases
+        $middleware->alias([
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Standard JSON error responses for the API
